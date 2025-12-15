@@ -7,14 +7,14 @@ npx expo start --clear
 
 git checkout feature/home_tab_20251215_v1
 git checkout feature/Developmental_tab_v1
-git checkout -b feature/Developmental_tab_v1
+git checkout -b feature/lets_do_it_tab_v1
 
-git pull origin feature/Developmental_tab_v1
+git pull origin feature/lets_do_it_tab_v1
 
 
 
 /* push to enhancement github features */
-git push -u origin feature/home_tab_20251215_v1
+git push -u origin feature/lets_do_it_tab_v1
 
 git commit -m "xxx"
 
