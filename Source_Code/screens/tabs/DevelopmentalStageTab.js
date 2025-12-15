@@ -8,9 +8,12 @@ import {
   Modal,
   Dimensions,
   TouchableWithoutFeedback,
+  Image,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.9; // 90% of screen height
@@ -32,6 +35,15 @@ const developmentalData = {
         'Begins to sit with support',
         'Shows interest in food',
       ],
+      videos: [
+        {
+          id: 'ov1',
+          title: 'Overall Development for Babies',
+          thumbnail: 'https://img.youtube.com/vi/zSsNjPHRb1U/maxresdefault.jpg',
+          youtubeId: 'zSsNjPHRb1U',
+          description: 'Learn about your baby\'s overall development and key milestones',
+        },
+      ],
     },
     socialEmotional: {
       title: 'Social & Emotional',
@@ -47,6 +59,15 @@ const developmentalData = {
         'Include a child-safe mirror among their toys so they can observe their movements',
         'Play interactive games such as peek-a-boo',
       ],
+      videos: [
+        {
+          id: 'se1',
+          title: 'Social & Emotional Development for Babies',
+          thumbnail: 'https://img.youtube.com/vi/VnNONCGtpKU/maxresdefault.jpg',
+          youtubeId: 'VnNONCGtpKU',
+          description: 'Learn how to support your baby\'s social and emotional growth',
+        },
+      ],
     },
     brainDevelopment: {
       title: 'Brain Development',
@@ -58,6 +79,15 @@ const developmentalData = {
       tips: [
         'Provide toys that are easy to grasp with one hand',
         'Talk about the objects your baby is holding or mouthing',
+      ],
+      videos: [
+        {
+          id: 'bd1',
+          title: 'Brain Development for Babies',
+          thumbnail: 'https://img.youtube.com/vi/1uYOFJ3mPFM/maxresdefault.jpg',
+          youtubeId: '1uYOFJ3mPFM',
+          description: 'Learn how to support your baby\'s brain development and cognitive growth',
+        },
       ],
     },
     movementPhysical: {
@@ -72,9 +102,18 @@ const developmentalData = {
       tips: [
         'Place favorite toys nearby to encourage rolling and reaching',
       ],
+      videos: [
+        {
+          id: 'mp1',
+          title: 'Movement & Physical Development for Babies',
+          thumbnail: 'https://img.youtube.com/vi/4otE7HxWKJg/maxresdefault.jpg',
+          youtubeId: '4otE7HxWKJg',
+          description: 'Learn how to support your baby\'s physical development and movement skills',
+        },
+      ],
     },
     foodNutrition: {
-      title: 'Food & Nutrition',
+      title: 'Baby To LOVE Food',
       subtitle: 'What mealtimes look like at 6 months',
       milestones: [
         'Shows interest in food and opens their mouth when spoon-fed',
@@ -83,6 +122,15 @@ const developmentalData = {
       ],
       tips: [
         'At 6 months, breast milk alone is no longer sufficient. Introduce 2–3 spoonfuls of soft food, up to four times a day',
+      ],
+      videos: [
+        {
+          id: 'fn1',
+          title: 'Baby To LOVE Food',
+          thumbnail: 'https://img.youtube.com/vi/XfB3rUjFWvI/maxresdefault.jpg',
+          youtubeId: 'XfB3rUjFWvI',
+          description: 'Learn how to help your baby develop a love for food and healthy eating habits',
+        },
       ],
     },
     thingsToLookOutFor: {
@@ -97,6 +145,15 @@ const developmentalData = {
         'Appears unusually floppy or stiff',
         'Cannot roll over in either direction',
         'Does not attempt to reach for nearby objects',
+      ],
+      videos: [
+        {
+          id: 'tlo1',
+          title: 'Things for Parents to Look Out For',
+          thumbnail: 'https://img.youtube.com/vi/wVRLDJcVKxk/maxresdefault.jpg',
+          youtubeId: 'wVRLDJcVKxk',
+          description: 'Learn about important warning signs and when to consult a paediatrician',
+        },
       ],
     },
   },
@@ -131,7 +188,7 @@ const categories = [
   },
   {
     id: 'foodNutrition',
-    title: 'Food & Nutrition',
+    title: 'Baby To LOVE Food',
     icon: '🍎',
     color: '#FF9800',
   },
@@ -142,6 +199,30 @@ const categories = [
     color: '#F44336',
   },
 ];
+
+// Helper function to open YouTube videos
+const openYouTubeVideo = async (youtubeId) => {
+  const youtubeUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+  try {
+    // Try to open in YouTube app first (iOS/Android)
+    const youtubeAppUrl = `vnd.youtube:${youtubeId}`;
+    const canOpen = await Linking.canOpenURL(youtubeAppUrl);
+    if (canOpen) {
+      await Linking.openURL(youtubeAppUrl);
+    } else {
+      // Fallback to browser
+      await WebBrowser.openBrowserAsync(youtubeUrl);
+    }
+  } catch (error) {
+    console.error('Error opening video:', error);
+    // Fallback to browser
+    try {
+      await WebBrowser.openBrowserAsync(youtubeUrl);
+    } catch (browserError) {
+      console.error('Error opening browser:', browserError);
+    }
+  }
+};
 
 const DevelopmentalStageTab = () => {
   const [childAge, setChildAge] = useState(null);
@@ -309,6 +390,51 @@ const DevelopmentalStageTab = () => {
               ))}
             </View>
           )}
+
+          {/* Video Section */}
+          {categoryData.videos && categoryData.videos.length > 0 && (
+            <View style={styles.videoSection}>
+              <Text style={styles.videoSectionTitle}>📹 Video Guidance</Text>
+              <Text style={styles.videoSectionSubtitle}>
+                Watch helpful videos to practice these skills
+              </Text>
+              {categoryData.videos.map((video) => (
+                <TouchableOpacity
+                  key={video.id}
+                  style={styles.videoCard}
+                  onPress={() => openYouTubeVideo(video.youtubeId)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.videoThumbnailContainer}>
+                    <Image
+                      source={{ uri: video.thumbnail }}
+                      style={styles.videoThumbnail}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.playButtonOverlay}>
+                      <View style={styles.playButton}>
+                        <Text style={styles.playButtonIcon}>▶</Text>
+                      </View>
+                    </View>
+                    {video.duration && (
+                      <View style={styles.videoDuration}>
+                        <Text style={styles.videoDurationText}>{video.duration}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.videoInfo}>
+                    <Text style={styles.videoTitle}>{video.title}</Text>
+                    {video.description && (
+                      <Text style={styles.videoDescription}>{video.description}</Text>
+                    )}
+                    <View style={styles.videoSource}>
+                      <Text style={styles.videoSourceText}>YouTube</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     );
@@ -345,27 +471,26 @@ const DevelopmentalStageTab = () => {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-              <View style={styles.modalContainer}>
-                {/* Modal Header with Close Button */}
-                <View style={styles.modalHeaderBar}>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setModalVisible(false)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.closeButtonText}>✕</Text>
-                  </TouchableOpacity>
-                </View>
+        <View style={styles.modalOverlay}>
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View style={styles.modalOverlayTouchable} />
+          </TouchableWithoutFeedback>
+          <View style={styles.modalContainer}>
+            {/* Modal Header with Close Button */}
+            <View style={styles.modalHeaderBar}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
 
-                {/* Modal Content */}
-                {renderModalContent()}
-              </View>
-            </TouchableWithoutFeedback>
+            {/* Modal Content - ScrollView */}
+            {renderModalContent()}
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -454,6 +579,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
+  modalOverlayTouchable: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   modalContainer: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
@@ -494,6 +626,7 @@ const styles = StyleSheet.create({
   },
   modalScrollView: {
     flex: 1,
+    width: '100%',
   },
   modalContent: {
     padding: 24,
@@ -584,6 +717,115 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     lineHeight: 22,
     flex: 1,
+  },
+  // Video Section Styles
+  videoSection: {
+    marginTop: 32,
+    marginBottom: 24,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#E1BEE7',
+  },
+  videoSectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  videoSectionSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  videoCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E1BEE7',
+    overflow: 'hidden',
+    shadowColor: '#B39DDB',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  videoThumbnailContainer: {
+    position: 'relative',
+    width: '100%',
+    aspectRatio: 16 / 9,
+    backgroundColor: '#F5F3FF',
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  playButtonOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  playButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  playButtonIcon: {
+    fontSize: 24,
+    color: '#9575CD',
+    marginLeft: 4, // Slight offset for play icon
+  },
+  videoDuration: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  videoDurationText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  videoInfo: {
+    padding: 16,
+  },
+  videoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 6,
+    lineHeight: 22,
+  },
+  videoDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  videoSource: {
+    alignSelf: 'flex-start',
+  },
+  videoSourceText: {
+    fontSize: 12,
+    color: '#9575CD',
+    fontWeight: '600',
   },
 });
 
