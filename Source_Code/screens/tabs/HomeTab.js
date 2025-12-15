@@ -142,7 +142,7 @@ const HomeTab = () => {
                   </TouchableOpacity>
                 </View>
 
-                {/* Column 2 (Right - 50%): Image */}
+                {/* Column 2 (Right - 40%): Image */}
                 <View style={styles.rightColumn}>
                   <Image 
                     source={{ uri: item.imageUrl }}
@@ -389,12 +389,12 @@ const styles = StyleSheet.create({
     minHeight: 140, // Minimum height, auto-adjusts based on content
   },
   leftColumn: {
-    flex: 0.5,
+    flex: 0.6,
     justifyContent: 'space-between',
     paddingRight: 10
   },
   rightColumn: {
-    flex: 0.5,
+    flex: 0.4,
     alignItems: 'stretch',
     justifyContent: 'flex-start',
     paddingRight: 8,
