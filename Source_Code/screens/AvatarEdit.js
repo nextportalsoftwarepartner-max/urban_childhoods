@@ -11,6 +11,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const CHILD_AGE_KEY = '@child_age';
+const CHILD_NAME_KEY = '@child_name';
 
 const AvatarEdit = ({ navigation, route }) => {
   // Check if we're in edit mode
@@ -47,7 +51,7 @@ const AvatarEdit = ({ navigation, route }) => {
     'Dark',
   ];
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validation
     if (!name.trim()) {
       Alert.alert('Validation Error', 'Please enter a name.');
@@ -72,6 +76,26 @@ const AvatarEdit = ({ navigation, route }) => {
     if (!hairColor) {
       Alert.alert('Validation Error', 'Please select a hair color.');
       return;
+    }
+
+    // Save child age and name to AsyncStorage for use in Developmental tab
+    // Convert age to months for babies (0-2 years) since developmental milestones use months
+    try {
+      const ageValue = parseInt(age, 10);
+      let ageInMonths = ageValue;
+      // If age is 0-2 years, convert to months for developmental tracking
+      if (ageValue <= 2) {
+        ageInMonths = ageValue * 12;
+      } else {
+        // For older children, store in months (years * 12)
+        ageInMonths = ageValue * 12;
+      }
+      await AsyncStorage.setItem(CHILD_AGE_KEY, ageInMonths.toString());
+      if (name.trim()) {
+        await AsyncStorage.setItem(CHILD_NAME_KEY, name.trim());
+      }
+    } catch (error) {
+      console.error('Error saving child data:', error);
     }
 
     // Here you would save the avatar data to your backend/database
