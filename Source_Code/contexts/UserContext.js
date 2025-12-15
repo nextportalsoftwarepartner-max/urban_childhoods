@@ -4,21 +4,26 @@ const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [userType, setUserType] = useState(null); // 'guest' or 'member'
+  const [userGender, setUserGender] = useState(null); // 'male' or 'female'
 
   const setGuestUser = () => {
     setUserType('guest');
+    setUserGender(null);
   };
 
-  const setMemberUser = () => {
+  const setMemberUser = (gender = null) => {
     setUserType('member');
+    setUserGender(gender);
   };
 
   const clearUser = () => {
     setUserType(null);
+    setUserGender(null);
   };
 
   const value = {
     userType,
+    userGender,
     setGuestUser,
     setMemberUser,
     clearUser,
