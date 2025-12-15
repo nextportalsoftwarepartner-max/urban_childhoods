@@ -15,6 +15,17 @@ const TAB_WIDTH = SCREEN_WIDTH / 4; // Show 4 tabs at a time
 // Custom Scrollable Tab Bar Component
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const scrollViewRef = React.useRef(null);
+  const [showRightIndicator, setShowRightIndicator] = React.useState(true);
+  const [scrollX, setScrollX] = React.useState(0);
+  
+  const totalWidth = TAB_WIDTH * state.routes.length;
+  const visibleWidth = SCREEN_WIDTH;
+
+  // Check if we can scroll right
+  const checkScrollPosition = (contentOffset) => {
+    const maxScroll = totalWidth - visibleWidth;
+    setShowRightIndicator(contentOffset.x < maxScroll - 10); // 10px threshold
+  };
 
   // Scroll to active tab when it changes
   React.useEffect(() => {
@@ -22,11 +33,20 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       // Scroll to show tabs 5 and 6 when selected
       const offset = (state.index - 3) * TAB_WIDTH;
       scrollViewRef.current.scrollTo({ x: offset, animated: true });
+      checkScrollPosition({ x: offset });
     } else if (scrollViewRef.current && state.index < 2) {
       // Scroll back to start when selecting first tabs
       scrollViewRef.current.scrollTo({ x: 0, animated: true });
+      checkScrollPosition({ x: 0 });
     }
   }, [state.index]);
+
+  // Initialize: show indicator if there are more than 4 tabs
+  React.useEffect(() => {
+    if (state.routes.length > 4) {
+      setShowRightIndicator(true);
+    }
+  }, []);
 
   return (
     <View style={customTabBarStyles.container}>
@@ -36,6 +56,12 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={customTabBarStyles.scrollContent}
         style={customTabBarStyles.scrollView}
+        onScroll={(event) => {
+          const contentOffset = event.nativeEvent.contentOffset;
+          setScrollX(contentOffset.x);
+          checkScrollPosition(contentOffset);
+        }}
+        scrollEventThrottle={16}
       >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -81,6 +107,14 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           );
         })}
       </ScrollView>
+      {/* Right fade indicator */}
+      {showRightIndicator && (
+        <View style={customTabBarStyles.rightIndicator} pointerEvents="none">
+          <View style={customTabBarStyles.indicatorBackground}>
+            <Text style={customTabBarStyles.moreText}>More</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -193,6 +227,7 @@ const customTabBarStyles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    position: 'relative',
   },
   scrollView: {
     flex: 1,
@@ -215,6 +250,30 @@ const customTabBarStyles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  rightIndicator: {
+    position: 'absolute',
+    right: 0,
+    top: 8,
+    bottom: 30,
+    width: 40,
+    pointerEvents: 'none',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  indicatorBackground: {
+    width: 40,
+    height: '100%',
+    backgroundColor: 'rgba(149, 117, 205, 0.5)', // Purple with 50% opacity (#9575CD)
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moreText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+    transform: [{ rotate: '90deg' }], // Rotate to vertical
+    letterSpacing: 2,
   },
 });
 
