@@ -151,9 +151,9 @@ const MenuLobby = () => {
         name="Learning" 
         component={LearningAdviceTab}
         options={{
-          tabBarLabel: 'Learning',
+          tabBarLabel: 'Let\'s Do It',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon emoji="📚" focused={focused} color={color} />
+            <TabBarIcon emoji="🎯" focused={focused} color={color} />
           ),
         }}
       />

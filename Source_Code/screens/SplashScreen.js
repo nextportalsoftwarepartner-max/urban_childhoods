@@ -17,10 +17,10 @@ const SplashScreen = ({ navigation }) => {
       videoRef.current.playAsync();
     }
 
-    // Navigate to login after video duration (3 seconds)
+    // Navigate to login after video duration (5 seconds)
     const timer = setTimeout(() => {
       navigation.replace('Login');
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearTimeout(timer);
@@ -36,9 +36,9 @@ const SplashScreen = ({ navigation }) => {
       <View style={styles.videoContainer}>
         <Video
           ref={videoRef}
-          source={require('../assets/SplashScreenLogo.mp4')}
+          source={require('../assets/SplashScreenLogo2.mp4')}
           style={styles.video}
-          resizeMode="contain"
+          resizeMode="cover"
           shouldPlay={true}
           isLooping={false}
           isMuted={true}
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   video: {
-    width: width * 1.0, // 100% of screen width (80% * 1.25 = 100%)
-    height: height * 0.75, // 75% of screen height (60% * 1.25 = 75%)
+    width: width, // Full screen width
+    height: height, // Full screen height
   },
 });
 
