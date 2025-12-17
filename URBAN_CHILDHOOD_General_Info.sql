@@ -5,9 +5,11 @@ npm install
 npx expo install --fix
 npx expo start --clear
 
+
+git checkout -b feature/new_branchname
 git checkout feature/home_tab_20251215_v1
 git checkout feature/Developmental_tab_v1
-git checkout -b feature/lets_do_it_tab_v1
+git checkout feature/lets_do_it_tab_v1
 
 git pull origin feature/lets_do_it_tab_v1
 
@@ -21,7 +23,7 @@ git commit -m "xxx"
 /* If there are uncommitted changes, commit them: */
 cd D:\CHIANWEILON\Software_Dev\Urban_Childhood;
 git add .
-git commit -m "General - Added logo and splash screen image"
+git commit -m "General - noted only"
 git push -u origin feature/lets_do_it_tab_v1
 
 /* merge my changes in feature/home_tab_v1 into main */
