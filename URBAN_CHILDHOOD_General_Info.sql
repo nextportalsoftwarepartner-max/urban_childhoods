@@ -19,11 +19,18 @@ git push -u origin feature/lets_do_it_tab_v1
 git commit -m "xxx"
 
 /* If there are uncommitted changes, commit them: */
+cd D:\CHIANWEILON\Software_Dev\Urban_Childhood;
 git add .
-git commit -m "Developmental Changes - Added Video Guidance URL to make it user friendly in teaching and practice"
-git push -u origin feature/Developmental_tab_v1
+git commit -m "General - Added logo and splash screen image"
+git push -u origin feature/lets_do_it_tab_v1
 
 /* merge my changes in feature/home_tab_v1 into main */
+git checkout main                              /* - Switch to the main branch */
+git pull origin main                           /* - Update your local main with the latest from remote */
+git merge feature/lets_do_it_tab_v1            /* - Merge the feature branch into main (you're on main, so feature changes go into main) */
+git push origin main                           /* - Push the updated main to remote */
+
+
 /* Step 1: Make sure all changes are committed
 First, ensure all your work is committed on the feature branch: */
 git status
